@@ -1,0 +1,47 @@
+services:
+  db_gym:
+    user: root
+    container_name: db_gym
+    image: postgres:17.1
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+    volumes:
+      - .:/var/lib/postgresql/data
+      - C:/Users/Admin/Downloads:/mnt/dumps
+    ports:
+      - 5434:5432
+    networks:
+      - db_gym
+
+  pgadmin_gym:
+    user: root
+    container_name: pgadmin_ege
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_USER: 'postgres'
+      PGADMIN_DEFAULT_EMAIL: 'postgres@postgres.com'
+      PGADMIN_DEFAULT_PASSWORD: 'postgres'
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+      - C:/Users/Admin/Downloads:/mnt/dumps
+    ports:
+      - '8003:80'
+    restart: unless-stopped
+    # depends_on:
+    #   - db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - db_gym
+
+networks:
+  db_gym:
+    driver: bridge
