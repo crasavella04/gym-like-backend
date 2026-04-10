@@ -11,6 +11,7 @@ import { Metric } from './metrics/entities/metrics.entity';
 import { ExercisesModule } from './exercises/exercises.module';
 import { Exercise } from './exercises/entities/exercises.entity';
 import { TrainingModule } from './training/training.module';
+import { IngredientsModule } from './ingredients/ingredients.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { TrainingModule } from './training/training.module';
     MetricsModule,
     ExercisesModule,
     TrainingModule,
+    IngredientsModule,
   ],
   controllers: [],
   providers: [],
