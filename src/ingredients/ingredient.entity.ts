@@ -1,11 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum IngredientUnit {
-  GRAM = 'g',
-  LITER = 'l',
-  PIECE = 'pcs',
-}
-
 @Entity('ingredients')
 export class Ingredient {
   @PrimaryGeneratedColumn('uuid')
@@ -17,10 +11,6 @@ export class Ingredient {
   @Column({ type: 'float' })
   calories: number;
 
-  @Column({
-    type: 'enum',
-    enum: IngredientUnit,
-    default: IngredientUnit.GRAM,
-  })
-  unit: IngredientUnit;
+  @Column({ type: 'varchar', length: 10 })
+  unit: string; // 'g', 'l', 'pcs'
 }

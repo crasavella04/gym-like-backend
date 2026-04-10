@@ -17,13 +17,20 @@ export class IngredientsService {
     return this.ingredientsRepository.save(ingredient);
   }
 
-  async findAll(search?: string): Promise<Ingredient[]> {
-    if (search) {
-      return this.ingredientsRepository.find({
-        where: { title: Like(`%${search}%`) },
-      });
-    }
-    return this.ingredientsRepository.find();
+  async findAll(
+    search?: string,
+    skip: number = 0,
+    take: number = 10,
+  ): Promise<{ data: Ingredient[]; total: number }> {
+    const where = search ? { title: Like(`%${search}%`) } : {};
+    
+    const [data, total] = await this.ingredientsRepository.findAndCount({
+      where,
+      skip,
+      take,
+    });
+
+    return { data, total };
   }
 
   async findOne(id: string): Promise<Ingredient> {
@@ -31,7 +38,9 @@ export class IngredientsService {
       where: { id },
     });
     if (!ingredient) {
-      throw new NotFoundException(`Ingredient with id ${id} not found`);
+      throw new NotFoundException(
+        `Ingredient with ID "${id}" not found in database`,
+      );
     }
     return ingredient;
   }
