@@ -166,5 +166,54 @@ describe('JwtAuthGuard', () => {
         lastname: '',
       });
     });
+
+    it('should throw UnauthorizedException when payload is missing required field id', async () => {
+      const token = 'valid-token';
+      const invalidPayload = {
+        email: 'test@example.com',
+      };
+      jwtService.decodeAccessToken.mockReturnValue(invalidPayload);
+
+      const context = mockExecutionContext(`Bearer ${token}`);
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Invalid token payload',
+      );
+    });
+
+    it('should throw UnauthorizedException when payload is missing required field email', async () => {
+      const token = 'valid-token';
+      const invalidPayload = {
+        id: 'user-123',
+      };
+      jwtService.decodeAccessToken.mockReturnValue(invalidPayload);
+
+      const context = mockExecutionContext(`Bearer ${token}`);
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Invalid token payload',
+      );
+    });
+
+    it('should throw UnauthorizedException when payload is missing both required fields', async () => {
+      const token = 'valid-token';
+      const invalidPayload = {};
+      jwtService.decodeAccessToken.mockReturnValue(invalidPayload);
+
+      const context = mockExecutionContext(`Bearer ${token}`);
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Invalid token payload',
+      );
+    });
   });
 });
