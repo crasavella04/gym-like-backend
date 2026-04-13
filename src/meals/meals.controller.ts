@@ -8,23 +8,23 @@ import {
   Param,
   Req,
 } from '@nestjs/common';
-import type { Request as ExpressRequest } from 'express';
+import type { Request } from 'express';
 import type { IPayload } from '../jwt/types/IPayload';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { MealsService } from './meals.service';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
-
-interface Request extends ExpressRequest {
-  user: IPayload;
-}
+import { JwtAuth } from '../auth/decorators/jwt-auth.decorator';
 
 @ApiTags('meals')
+@ApiBearerAuth()
 @Controller('meals')
+@JwtAuth()
 export class MealsController {
   constructor(private readonly mealsService: MealsService) {}
 
