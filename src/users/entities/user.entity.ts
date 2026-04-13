@@ -13,6 +13,7 @@ import { GenderEnum } from '../types/GenderEnum';
 import { RoleEnum } from '../types/RoleEnum';
 import { Metric } from 'src/metrics/entities/metrics.entity';
 import { TrainingGoalEnum } from '../types/TrainingGoalEnum';
+import { Meal } from 'src/meals/entities/meal.entity';
 
 @Entity('users')
 export class User {
@@ -59,6 +60,9 @@ export class User {
 
   @OneToMany(() => User, (user) => user.trainer)
   students: User[];
+
+  @OneToMany(() => Meal, (meal) => meal.user)
+  meals: Meal[];
 
   @Column({ type: 'uuid', nullable: true })
   trainerId: string;
