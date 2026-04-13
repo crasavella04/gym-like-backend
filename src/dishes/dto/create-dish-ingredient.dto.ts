@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDishIngredientDto {
@@ -10,5 +10,6 @@ export class CreateDishIngredientDto {
   @ApiProperty({ description: 'Количество', example: 150.5 })
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   quantity: number;
 }

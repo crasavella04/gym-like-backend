@@ -6,6 +6,7 @@ import { DishIngredient } from './entities/dish-ingredient.entity';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
 import { FilterDishDto } from './dto/filter-dish.dto';
+import { Ingredient } from '../ingredients/ingredient.entity';
 
 @Injectable()
 export class DishesService {
@@ -14,13 +15,27 @@ export class DishesService {
     private dishRepo: Repository<Dish>,
     @InjectRepository(DishIngredient)
     private dishIngredientRepo: Repository<DishIngredient>,
+    @InjectRepository(Ingredient)
+    private ingredientRepo: Repository<Ingredient>,
   ) {}
 
   async create(dto: CreateDishDto): Promise<Dish> {
+    // Validate ingredient IDs exist
+    for (const ingredient of dto.ingredients || []) {
+      const exists = await this.ingredientRepo.findOne({
+        where: { id: ingredient.ingredientId },
+      });
+      if (!exists) {
+        throw new NotFoundException(
+          `Ingredient with ID "${ingredient.ingredientId}" not found`,
+        );
+      }
+    }
+
     const dish = this.dishRepo.create({
       title: dto.title,
       description: dto.description,
-      ingredients: dto.ingredients.map((i) =>
+      ingredients: dto.ingredients?.map((i) =>
         this.dishIngredientRepo.create({
           ingredientId: i.ingredientId,
           quantity: i.quantity,
@@ -46,9 +61,15 @@ export class DishesService {
     }
 
     if (filter?.ingredientIds && filter.ingredientIds.length > 0) {
-      qb.andWhere('ingredient.id IN (:...ingredientIds)', {
-        ingredientIds: filter.ingredientIds,
-      });
+      qb.andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('di.dishId')
+          .from(DishIngredient, 'di')
+          .where('di.ingredientId IN (:...ingredientIds)')
+          .getQuery();
+        return 'dish.id IN ' + subQuery;
+      }, { ingredientIds: filter.ingredientIds });
     }
 
     const [data, total] = await qb.getManyAndCount();
@@ -65,23 +86,47 @@ export class DishesService {
   }
 
   async update(id: string, dto: UpdateDishDto): Promise<Dish> {
-    const dish = await this.findOne(id);
+    return this.dishRepo.manager.transaction(
+      async (transactionalEntityManager) => {
+        const dish = await transactionalEntityManager.findOne(Dish, {
+          where: { id },
+          relations: ['ingredients', 'ingredients.ingredient'],
+        });
+        if (!dish)
+          throw new NotFoundException(`Dish with ID "${id}" not found`);
 
-    if (dto.title !== undefined) dish.title = dto.title;
-    if (dto.description !== undefined) dish.description = dto.description;
+        if (dto.title !== undefined) dish.title = dto.title;
+        if (dto.description !== undefined) dish.description = dto.description;
 
-    if (dto.ingredients !== undefined) {
-      await this.dishIngredientRepo.delete({ dishId: id });
-      dish.ingredients = dto.ingredients.map((i) =>
-        this.dishIngredientRepo.create({
-          ingredientId: i.ingredientId,
-          quantity: i.quantity,
-          dishId: id,
-        }),
-      );
-    }
+        if (dto.ingredients !== undefined) {
+          // Validate ingredient IDs exist
+          for (const ingredient of dto.ingredients) {
+            const exists = await transactionalEntityManager.findOne(
+              Ingredient,
+              {
+                where: { id: ingredient.ingredientId },
+              },
+            );
+            if (!exists) {
+              throw new NotFoundException(
+                `Ingredient with ID "${ingredient.ingredientId}" not found`,
+              );
+            }
+          }
 
-    return this.dishRepo.save(dish);
+          await transactionalEntityManager.delete(DishIngredient, { dishId: id });
+          dish.ingredients = dto.ingredients.map((i) =>
+            transactionalEntityManager.create(DishIngredient, {
+              ingredientId: i.ingredientId,
+              quantity: i.quantity,
+              dishId: id,
+            }),
+          );
+        }
+
+        return transactionalEntityManager.save(dish);
+      },
+    );
   }
 
   async remove(id: string): Promise<void> {

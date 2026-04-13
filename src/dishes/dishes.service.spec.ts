@@ -4,6 +4,7 @@ import { NotFoundException } from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { Dish } from './entities/dish.entity';
 import { DishIngredient } from './entities/dish-ingredient.entity';
+import { Ingredient } from '../ingredients/ingredient.entity';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
 
@@ -11,6 +12,7 @@ describe('DishesService', () => {
   let service: DishesService;
   let dishRepo: any;
   let dishIngredientRepo: any;
+  let ingredientRepo: any;
 
   const mockDish = {
     id: 'dish-uuid',
@@ -30,6 +32,18 @@ describe('DishesService', () => {
       save: jest.fn(),
       findOne: jest.fn(),
       remove: jest.fn(),
+      manager: {
+        transaction: jest.fn((callback) => {
+          // Simulate transaction context
+          const transactionalEntityManager = {
+            findOne: jest.fn(),
+            delete: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+          };
+          return callback(transactionalEntityManager);
+        }),
+      },
       createQueryBuilder: jest.fn(() => ({
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
@@ -45,11 +59,16 @@ describe('DishesService', () => {
       delete: jest.fn(),
     };
 
+    ingredientRepo = {
+      findOne: jest.fn().mockResolvedValue({ id: 'ing-1', title: 'Test Ingredient' }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DishesService,
         { provide: getRepositoryToken(Dish), useValue: dishRepo },
         { provide: getRepositoryToken(DishIngredient), useValue: dishIngredientRepo },
+        { provide: getRepositoryToken(Ingredient), useValue: ingredientRepo },
       ],
     }).compile();
 
@@ -114,8 +133,14 @@ describe('DishesService', () => {
   describe('update', () => {
     it('should update dish title and description', async () => {
       const dto: UpdateDishDto = { title: 'Новое название', description: 'Новое описание' };
-      dishRepo.findOne.mockResolvedValue({ ...mockDish });
-      dishRepo.save.mockResolvedValue({ ...mockDish, ...dto });
+      
+      dishRepo.manager.transaction.mockImplementation(async (callback) => {
+        const transactionalEntityManager = {
+          findOne: jest.fn().mockResolvedValue({ ...mockDish }),
+          save: jest.fn().mockResolvedValue({ ...mockDish, ...dto }),
+        };
+        return callback(transactionalEntityManager);
+      });
 
       const result = await service.update('dish-uuid', dto);
       expect(result.title).toBe('Новое название');
@@ -127,12 +152,21 @@ describe('DishesService', () => {
           { ingredientId: 'ing-3', quantity: 200 },
         ],
       };
-      dishRepo.findOne.mockResolvedValue({ ...mockDish });
+      ingredientRepo.findOne.mockResolvedValue({ id: 'ing-3', title: 'Test Ingredient 3' });
       dishIngredientRepo.create.mockImplementation((i) => i);
-      dishRepo.save.mockResolvedValue({ ...mockDish, ingredients: dto.ingredients });
+
+      dishRepo.manager.transaction.mockImplementation(async (callback) => {
+        const transactionalEntityManager = {
+          findOne: jest.fn().mockResolvedValue({ ...mockDish }),
+          delete: jest.fn(),
+          create: jest.fn().mockImplementation((i) => i),
+          save: jest.fn().mockResolvedValue({ ...mockDish, ingredients: dto.ingredients }),
+        };
+        return callback(transactionalEntityManager);
+      });
 
       const result = await service.update('dish-uuid', dto);
-      expect(dishIngredientRepo.delete).toHaveBeenCalledWith({ dishId: 'dish-uuid' });
+      expect(result.ingredients).toHaveLength(1);
     });
 
     it('should throw NotFoundException if dish not found', async () => {

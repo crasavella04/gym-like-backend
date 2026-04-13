@@ -15,9 +15,9 @@ export class CreateDishDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ description: 'Ингредиенты блюда', type: [CreateDishIngredientDto] })
+  @ApiProperty({ description: 'Ингредиенты блюда', type: [CreateDishIngredientDto], required: false })
+  @IsOptional()
   @ValidateNested({ each: true })
-  @ArrayMinSize(1)
   @Type(() => CreateDishIngredientDto)
-  ingredients: CreateDishIngredientDto[];
+  ingredients?: CreateDishIngredientDto[];
 }
