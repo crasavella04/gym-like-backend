@@ -12,6 +12,10 @@ import { ExercisesModule } from './exercises/exercises.module';
 import { Exercise } from './exercises/entities/exercises.entity';
 import { TrainingModule } from './training/training.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
+import { Ingredient } from './ingredients/ingredient.entity';
+import { DishesModule } from './dishes/dishes.module';
+import { Dish } from './dishes/entities/dish.entity';
+import { DishIngredient } from './dishes/entities/dish-ingredient.entity';
 
 @Module({
   imports: [
@@ -25,7 +29,7 @@ import { IngredientsModule } from './ingredients/ingredients.module';
       username: process.env.DATABASE_USERNAME || 'postgres',
       password: process.env.DATABASE_PASSWORD || 'postgres',
       database: process.env.DATABASE || 'postgres',
-      entities: [User, Metric, Exercise],
+      entities: [User, Metric, Exercise, Ingredient, Dish, DishIngredient],
       synchronize: true,
     }),
     UsersModule,
@@ -36,6 +40,7 @@ import { IngredientsModule } from './ingredients/ingredients.module';
     ExercisesModule,
     TrainingModule,
     IngredientsModule,
+    DishesModule,
   ],
   controllers: [],
   providers: [],
