@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { IngredientsService } from './ingredients.service';
-import { Ingredient, IngredientUnit } from './ingredient.entity';
+import { Ingredient } from './ingredient.entity';
+import { IngredientUnitEnum } from './dto/create-ingredient.dto';
 import { NotFoundException } from '@nestjs/common';
 
 describe('IngredientsService', () => {
@@ -12,7 +13,7 @@ describe('IngredientsService', () => {
     id: '123e4567-e89b-12d3-a456-426614174000',
     title: 'Chicken',
     calories: 165,
-    unit: IngredientUnit.GRAM,
+    unit: IngredientUnitEnum.GRAM,
   };
 
   beforeEach(async () => {
@@ -20,6 +21,7 @@ describe('IngredientsService', () => {
       create: jest.fn(),
       save: jest.fn(),
       find: jest.fn(),
+      findAndCount: jest.fn(),
       findOne: jest.fn(),
       remove: jest.fn(),
     };
@@ -46,7 +48,7 @@ describe('IngredientsService', () => {
       const createDto = {
         title: 'Chicken',
         calories: 165,
-        unit: IngredientUnit.GRAM,
+        unit: IngredientUnitEnum.GRAM,
       };
 
       mockRepository.create.mockReturnValue(mockIngredient);
@@ -62,22 +64,28 @@ describe('IngredientsService', () => {
 
   describe('findAll', () => {
     it('should return all ingredients', async () => {
-      mockRepository.find.mockResolvedValue([mockIngredient]);
+      mockRepository.findAndCount.mockResolvedValue([[mockIngredient], 1]);
 
       const result = await service.findAll();
 
-      expect(result).toEqual([mockIngredient]);
-      expect(mockRepository.find).toHaveBeenCalledWith();
+      expect(result).toEqual({ data: [mockIngredient], total: 1 });
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith({
+        where: {},
+        skip: 0,
+        take: 10,
+      });
     });
 
     it('should search ingredients by title', async () => {
-      mockRepository.find.mockResolvedValue([mockIngredient]);
+      mockRepository.findAndCount.mockResolvedValue([[mockIngredient], 1]);
 
       const result = await service.findAll('Chicken');
 
-      expect(result).toEqual([mockIngredient]);
-      expect(mockRepository.find).toHaveBeenCalledWith({
+      expect(result).toEqual({ data: [mockIngredient], total: 1 });
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith({
         where: { title: expect.anything() },
+        skip: 0,
+        take: 10,
       });
     });
   });

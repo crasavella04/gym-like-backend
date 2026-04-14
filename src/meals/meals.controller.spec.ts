@@ -5,11 +5,8 @@ import { Meal } from './entities/meal.entity';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
 import { IPayload } from '../jwt/types/IPayload';
-import type { Request as ExpressRequest } from 'express';
-
-interface Request extends ExpressRequest {
-  user: IPayload;
-}
+import type { Request } from 'express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 describe('MealsController', () => {
   let controller: MealsController;
@@ -54,7 +51,10 @@ describe('MealsController', () => {
           useValue: mockMealsService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<MealsController>(MealsController);
     service = module.get<MealsService>(MealsService);
