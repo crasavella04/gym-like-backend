@@ -20,8 +20,8 @@ export class MetricsService {
     return await this.metricsRepository.findOne({ where: { id } });
   }
 
-  async create(dto: CreateMetricDto): Promise<Metric> {
-    return await this.metricsRepository.save(dto);
+  async create(userId: string, dto: CreateMetricDto): Promise<Metric> {
+    return await this.metricsRepository.save({ ...dto, userId });
   }
 
   async updateMetricFromUser(userId: string, id: string, dto: UpdateMetricDto) {
