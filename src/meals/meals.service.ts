@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Meal } from './entities/meal.entity';
-import { Dish } from '../dishes/entities/dish.entity';
+import { DishesService } from '../dishes/dishes.service';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
 
@@ -11,8 +11,7 @@ export class MealsService {
   constructor(
     @InjectRepository(Meal)
     private mealsRepository: Repository<Meal>,
-    @InjectRepository(Dish)
-    private dishesRepository: Repository<Dish>,
+    private dishesService: DishesService,
   ) {}
 
   async findAll(userId: string): Promise<Meal[]> {
@@ -40,13 +39,7 @@ export class MealsService {
   }
 
   async create(userId: string, createMealDto: CreateMealDto): Promise<Meal> {
-    const dish = await this.dishesRepository.findOne({
-      where: { id: createMealDto.dishId },
-    });
-
-    if (!dish) {
-      throw new NotFoundException(`Dish with ID ${createMealDto.dishId} not found`);
-    }
+    const dish = await this.dishesService.findOne(createMealDto.dishId);
 
     const meal = this.mealsRepository.create({
       ...createMealDto,
@@ -70,13 +63,7 @@ export class MealsService {
     }
 
     if (updateMealDto.dishId) {
-      const dish = await this.dishesRepository.findOne({
-        where: { id: updateMealDto.dishId },
-      });
-
-      if (!dish) {
-        throw new NotFoundException(`Dish with ID ${updateMealDto.dishId} not found`);
-      }
+      await this.dishesService.findOne(updateMealDto.dishId);
     }
 
     Object.assign(meal, updateMealDto);

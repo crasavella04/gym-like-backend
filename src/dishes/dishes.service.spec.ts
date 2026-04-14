@@ -5,6 +5,7 @@ import { DishesService } from './dishes.service';
 import { Dish } from './entities/dish.entity';
 import { DishIngredient } from './entities/dish-ingredient.entity';
 import { Ingredient } from '../ingredients/ingredient.entity';
+import { IngredientsService } from '../ingredients/ingredients.service';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
 
@@ -12,7 +13,7 @@ describe('DishesService', () => {
   let service: DishesService;
   let dishRepo: any;
   let dishIngredientRepo: any;
-  let ingredientRepo: any;
+  let ingredientsService: any;
 
   const mockDish = {
     id: 'dish-uuid',
@@ -59,7 +60,7 @@ describe('DishesService', () => {
       delete: jest.fn(),
     };
 
-    ingredientRepo = {
+    ingredientsService = {
       findOne: jest.fn().mockResolvedValue({ id: 'ing-1', title: 'Test Ingredient' }),
     };
 
@@ -68,7 +69,7 @@ describe('DishesService', () => {
         DishesService,
         { provide: getRepositoryToken(Dish), useValue: dishRepo },
         { provide: getRepositoryToken(DishIngredient), useValue: dishIngredientRepo },
-        { provide: getRepositoryToken(Ingredient), useValue: ingredientRepo },
+        { provide: IngredientsService, useValue: ingredientsService },
       ],
     }).compile();
 
@@ -152,7 +153,7 @@ describe('DishesService', () => {
           { ingredientId: 'ing-3', quantity: 200 },
         ],
       };
-      ingredientRepo.findOne.mockResolvedValue({ id: 'ing-3', title: 'Test Ingredient 3' });
+      ingredientsService.findOne.mockResolvedValue({ id: 'ing-3', title: 'Test Ingredient 3' });
       dishIngredientRepo.create.mockImplementation((i) => i);
 
       dishRepo.manager.transaction.mockImplementation(async (callback) => {

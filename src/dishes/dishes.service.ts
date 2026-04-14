@@ -6,6 +6,7 @@ import { DishIngredient } from './entities/dish-ingredient.entity';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
 import { FilterDishDto } from './dto/filter-dish.dto';
+import { IngredientsService } from '../ingredients/ingredients.service';
 import { Ingredient } from '../ingredients/ingredient.entity';
 
 @Injectable()
@@ -15,16 +16,13 @@ export class DishesService {
     private dishRepo: Repository<Dish>,
     @InjectRepository(DishIngredient)
     private dishIngredientRepo: Repository<DishIngredient>,
-    @InjectRepository(Ingredient)
-    private ingredientRepo: Repository<Ingredient>,
+    private ingredientsService: IngredientsService,
   ) {}
 
   async create(dto: CreateDishDto): Promise<Dish> {
     // Validate ingredient IDs exist
     for (const ingredient of dto.ingredients || []) {
-      const exists = await this.ingredientRepo.findOne({
-        where: { id: ingredient.ingredientId },
-      });
+      const exists = await this.ingredientsService.findOne(ingredient.ingredientId);
       if (!exists) {
         throw new NotFoundException(
           `Ingredient with ID "${ingredient.ingredientId}" not found`,
