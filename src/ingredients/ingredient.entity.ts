@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { IngredientUnitEnum } from './dto/create-ingredient.dto';
 
 @Entity('ingredients')
 export class Ingredient {
@@ -11,6 +12,9 @@ export class Ingredient {
   @Column({ type: 'float' })
   calories: number;
 
-  @Column({ type: 'varchar', length: 10 })
-  unit: string; // 'g', 'l', 'pcs'
+  @Column({
+    type: 'varchar',
+    length: 10,
+  })
+  unit: IngredientUnitEnum;
 }
