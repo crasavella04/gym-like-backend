@@ -9,30 +9,35 @@ import {
   Req,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import type { Request } from 'express';
+import { JwtAuth } from '../auth/decorators/jwt-auth.decorator';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
+@JwtAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Получить список пользователей' })
-  @ApiOkResponse({ type: [CreateUserDto] })
-  async findAll(): Promise<User[]> {
-    return await this.usersService.findAll();
-  }
+  // @Get()
+  // @ApiOperation({ summary: 'Получить список пользователей' })
+  // @ApiOkResponse({ type: [CreateUserDto] })
+  // async findAll(): Promise<User[]> {
+  //   return await this.usersService.findAll();
+  // }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Получить пользователя по идентификатору' })
+  @Get()
+  @ApiOperation({ summary: 'Получить текущего пользователя' })
   @ApiOkResponse({ type: CreateUserDto })
   @ApiResponse({ status: 404, description: 'Пользователь не найден' })
-  async findOne(@Param('id') id: string) {
-    return await this.usersService.findOne(id);
+  async findOne(@Req() req: Request) {
+    return await this.usersService.findOne(req.user.id);
   }
 
   @Patch()

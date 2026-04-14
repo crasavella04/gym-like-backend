@@ -3,71 +3,108 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-
-const mockUser: User = {
-  id: 'user-123',
-  email: 'test@example.com',
-  passwordHash: 'hashed',
-  name: 'Test User',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-} as User;
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { IPayload } from '../jwt/types/IPayload';
+import { NotFoundException } from '@nestjs/common';
+import type { Request } from 'express';
 
 describe('UsersController', () => {
   let controller: UsersController;
   let service: UsersService;
 
+  const mockUserId = 'user-123';
+  const mockUser: IPayload = {
+    id: mockUserId,
+    email: 'test@example.com',
+    firstname: 'John',
+    lastname: 'Doe',
+  };
+
+  const mockRequest = {
+    user: mockUser,
+  } as Request;
+
+  const mockUserEntity: User = {
+    id: mockUserId,
+    email: 'test@example.com',
+    password: 'hashed-password',
+    firstname: 'John',
+    lastname: 'Doe',
+    avatar: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const mockUsersService = {
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+    remove: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: mockUsersService }],
-    }).compile();
+      providers: [
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
+        },
+      ],
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('findAll', () => {
-    it('should return array of users', async () => {
-      mockUsersService.findAll.mockResolvedValue([mockUser]);
-      const result = await controller.findAll();
-      expect(result).toEqual([mockUser]);
-      expect(mockUsersService.findAll).toHaveBeenCalled();
-    });
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
   describe('findOne', () => {
-    it('should return single user', async () => {
-      mockUsersService.findOne.mockResolvedValue(mockUser);
-      const result = await controller.findOne('user-123');
-      expect(result).toEqual(mockUser);
-      expect(mockUsersService.findOne).toHaveBeenCalledWith('user-123');
+    it('should return the current user', async () => {
+      mockUsersService.findOne.mockResolvedValue(mockUserEntity);
+
+      const result = await controller.findOne(mockRequest);
+
+      expect(service.findOne).toHaveBeenCalledWith(mockUserId);
+      expect(result).toEqual(mockUserEntity);
+    });
+
+    it('should throw NotFoundException if user not found', async () => {
+      mockUsersService.findOne.mockRejectedValue(
+        new NotFoundException('User not found'),
+      );
+
+      await expect(controller.findOne(mockRequest)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('update', () => {
     it('should update user using id from req.user.id', async () => {
-      const updateDto: UpdateUserDto = { name: 'Updated Name' };
+      const updateDto: UpdateUserDto = { firstname: 'Updated Name' };
       const req = { user: { id: 'user-123' } } as any;
-      mockUsersService.update.mockResolvedValue({ ...mockUser, ...updateDto });
+      mockUsersService.update.mockResolvedValue({ ...mockUserEntity, ...updateDto });
 
       const result = await controller.update(req, updateDto);
 
       expect(mockUsersService.update).toHaveBeenCalledWith('user-123', updateDto);
-      expect(result.name).toBe('Updated Name');
+      expect(result.firstname).toBe('Updated Name');
     });
 
     it('should NOT accept id from @Param - uses req.user.id only', async () => {
       const updateDto: UpdateUserDto = { email: 'new@example.com' };
       const req = { user: { id: 'user-999' } } as any;
-      mockUsersService.update.mockResolvedValue({ ...mockUser, ...updateDto });
+      mockUsersService.update.mockResolvedValue({ ...mockUserEntity, ...updateDto });
 
       await controller.update(req, updateDto);
 
