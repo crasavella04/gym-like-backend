@@ -5,13 +5,14 @@ import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { MealsService } from './meals.service';
 import { Meal } from './entities/meal.entity';
 import { Dish } from '../dishes/entities/dish.entity';
+import { DishesService } from '../dishes/dishes.service';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
 
 describe('MealsService', () => {
   let service: MealsService;
   let mealsRepository: jest.Mocked<Repository<Meal>>;
-  let dishesRepository: jest.Mocked<Repository<Dish>>;
+  let dishesService: any;
 
   const mockUser = {
     id: 'user-123',
@@ -49,7 +50,7 @@ describe('MealsService', () => {
     remove: jest.fn(),
   };
 
-  const mockDishesRepository = {
+  const mockDishesService = {
     findOne: jest.fn(),
   };
 
@@ -62,15 +63,15 @@ describe('MealsService', () => {
           useValue: mockMealsRepository,
         },
         {
-          provide: getRepositoryToken(Dish),
-          useValue: mockDishesRepository,
+          provide: DishesService,
+          useValue: mockDishesService,
         },
       ],
     }).compile();
 
     service = module.get<MealsService>(MealsService);
     mealsRepository = module.get(getRepositoryToken(Meal));
-    dishesRepository = module.get(getRepositoryToken(Dish));
+
   });
 
   afterEach(() => {
@@ -142,16 +143,14 @@ describe('MealsService', () => {
         dishId: 'dish-123',
       };
 
-      mockDishesRepository.findOne.mockResolvedValue(mockDish);
+      mockDishesService.findOne.mockResolvedValue(mockDish);
       mockMealsRepository.create.mockReturnValue(mockMeal);
       mockMealsRepository.save.mockResolvedValue(mockMeal);
 
       const result = await service.create('user-123', createDto);
 
       expect(result).toEqual(mockMeal);
-      expect(mockDishesRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'dish-123' },
-      });
+      expect(mockDishesService.findOne).toHaveBeenCalledWith('dish-123');
       expect(mockMealsRepository.create).toHaveBeenCalledWith({
         ...createDto,
         userId: 'user-123',
@@ -165,7 +164,8 @@ describe('MealsService', () => {
         dishId: 'non-existent-dish',
       };
 
-      mockDishesRepository.findOne.mockResolvedValue(null);
+
+      mockDishesService.findOne.mockRejectedValue(new NotFoundException());
 
       await expect(service.create('user-123', createDto)).rejects.toThrow(
         NotFoundException,
@@ -214,7 +214,7 @@ describe('MealsService', () => {
       const updateDto: UpdateMealDto = { dishId: 'non-existent-dish' };
 
       mockMealsRepository.findOne.mockResolvedValue(mockMeal);
-      mockDishesRepository.findOne.mockResolvedValue(null);
+      mockDishesService.findOne.mockRejectedValue(new NotFoundException());
 
       await expect(service.update('meal-123', 'user-123', updateDto)).rejects.toThrow(
         NotFoundException,
