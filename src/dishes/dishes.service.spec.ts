@@ -4,7 +4,7 @@ import { NotFoundException } from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { Dish } from './entities/dish.entity';
 import { DishIngredient } from './entities/dish-ingredient.entity';
-import { Ingredient } from '../ingredients/ingredient.entity';
+import { Ingredient } from '../ingredients/entities/ingredient.entity';
 import { IngredientsService } from '../ingredients/ingredients.service';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';

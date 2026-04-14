@@ -7,7 +7,7 @@ import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
 import { FilterDishDto } from './dto/filter-dish.dto';
 import { IngredientsService } from '../ingredients/ingredients.service';
-import { Ingredient } from '../ingredients/ingredient.entity';
+import { Ingredient } from '../ingredients/entities/ingredient.entity';
 
 @Injectable()
 export class DishesService {

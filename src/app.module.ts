@@ -12,7 +12,7 @@ import { ExercisesModule } from './exercises/exercises.module';
 import { Exercise } from './exercises/entities/exercises.entity';
 import { TrainingModule } from './training/training.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
-import { Ingredient } from './ingredients/ingredient.entity';
+import { Ingredient } from './ingredients/entities/ingredient.entity';
 import { DishesModule } from './dishes/dishes.module';
 import { Dish } from './dishes/entities/dish.entity';
 import { DishIngredient } from './dishes/entities/dish-ingredient.entity';

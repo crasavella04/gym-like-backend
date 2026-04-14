@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { IngredientsService } from './ingredients.service';
-import { Ingredient } from './ingredient.entity';
+import { Ingredient } from "./entities/ingredient.entity";
 import { IngredientUnitEnum } from './dto/create-ingredient.dto';
 import { NotFoundException } from '@nestjs/common';
 

@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { IngredientUnitEnum } from './dto/create-ingredient.dto';
+import { IngredientUnitEnum } from '../dto/create-ingredient.dto';
 
 @Entity('ingredients')
 export class Ingredient {

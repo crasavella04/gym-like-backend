@@ -6,7 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Dish } from './dish.entity';
-import { Ingredient } from '../../ingredients/ingredient.entity';
+import { Ingredient } from '../../ingredients/entities/ingredient.entity';
 
 @Entity('dish_ingredients')
 export class DishIngredient {
