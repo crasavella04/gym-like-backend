@@ -11,6 +11,8 @@ import { Metric } from './metrics/entities/metrics.entity';
 import { ExercisesModule } from './exercises/exercises.module';
 import { Exercise } from './exercises/entities/exercises.entity';
 import { TrainingModule } from './training/training.module';
+import { Training } from './training/entities/training.entity';
+import { TrainingExercises } from './training/entities/training-exercises.entity';
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { Ingredient } from './ingredients/entities/ingredient.entity';
 import { DishesModule } from './dishes/dishes.module';
@@ -18,6 +20,7 @@ import { Dish } from './dishes/entities/dish.entity';
 import { DishIngredient } from './dishes/entities/dish-ingredient.entity';
 import { MealsModule } from './meals/meals.module';
 import { Meal } from './meals/entities/meal.entity';
+import { ExerciseSets } from "./training/entities/exercise_sets.entity";
 
 @Module({
   imports: [
@@ -28,10 +31,10 @@ import { Meal } from './meals/entities/meal.entity';
       type: 'postgres',
       host: process.env.DATABASE_HOST || 'localhost',
       port: Number(process.env.DATABASE_PORT) || 5431,
-      username: process.env.DATABASE_USERNAME || 'postgres',
+      username: process.env.DATABASE_USERNAME || 'postgres', 
       password: process.env.DATABASE_PASSWORD || 'postgres',
       database: process.env.DATABASE || 'postgres',
-      entities: [User, Metric, Exercise, Ingredient, Dish, DishIngredient, Meal],
+      entities: [User, Metric, Exercise, Ingredient, Dish, DishIngredient, Meal, Training, TrainingExercises, ExerciseSets],
       synchronize: true,
     }),
     UsersModule,
