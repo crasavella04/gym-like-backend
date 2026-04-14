@@ -40,12 +40,12 @@ export class UsersController {
     return await this.usersService.findOne(req.user.id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Обновить пользователя' })
+  @Patch()
+  @ApiOperation({ summary: 'Обновить текущего пользователя' })
   @ApiOkResponse({ type: CreateUserDto })
   @ApiResponse({ status: 404, description: 'Пользователь не найден' })
-  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return await this.usersService.update(id, dto);
+  async update(@Req() req: Request, @Body() dto: UpdateUserDto) {
+    return await this.usersService.update(req.user.id, dto);
   }
 
   // @Delete(':id')
