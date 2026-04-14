@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -19,20 +19,8 @@ export class UsersService {
     return await this.usersRepository.find();
   }
 
-  async findOne(id: string, currentUserId?: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    // Проверка прав доступа (только владелец или admin)
-    if (currentUserId && id !== currentUserId) {
-      // Здесь можно добавить проверку роли admin
-      // Пока закомментируем:
-      // throw new ForbiddenException('Access denied');
-    }
-
-    return user;
+  async findOne(id: string) {
+    return await this.usersRepository.findOne({ where: { id } });
   }
 
   async findByEmail(email: string) {
