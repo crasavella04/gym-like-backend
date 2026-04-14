@@ -14,9 +14,10 @@ export class Training {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, (user) => {}, {
-    onDelete: 'CASCADE',
-  })
+  @Column({ type: 'uuid' })
+  userId: string;
+
+  @ManyToOne(() => User, (user) => user.trainings, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 

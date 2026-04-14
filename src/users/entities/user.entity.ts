@@ -14,6 +14,7 @@ import { RoleEnum } from '../types/RoleEnum';
 import { Metric } from 'src/metrics/entities/metrics.entity';
 import { TrainingGoalEnum } from '../types/TrainingGoalEnum';
 import { Meal } from 'src/meals/entities/meal.entity';
+import { Training } from 'src/training/entities/training.entity';
 
 @Entity('users')
 export class User {
@@ -63,6 +64,9 @@ export class User {
 
   @OneToMany(() => Meal, (meal) => meal.user)
   meals: Meal[];
+
+  @OneToMany(() => Training, (training) => training.user)
+  trainings: Training[];
 
   @Column({ type: 'uuid', nullable: true })
   trainerId: string;
