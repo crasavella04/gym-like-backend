@@ -9,7 +9,6 @@ import {
   Req,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import type { IPayload } from '../jwt/types/IPayload';
 import {
   ApiTags,
   ApiOperation,

@@ -22,7 +22,7 @@ export class TrainingExercises {
   @JoinColumn({ name: 'trainingId' })
   training: Training;
 
-  @ManyToOne(() => Exercise, (exercise) => {}, {
+  @ManyToOne(() => Exercise, () => {}, {
     nullable: true,
     onDelete: 'CASCADE',
   })
