@@ -17,4 +17,13 @@ export class Ingredient {
     length: 10,
   })
   unit: IngredientUnitEnum;
+
+  @Column({ type: 'float' })
+  protein: number; // белок в граммах на единицу ингредиента
+
+  @Column({ type: 'float' })
+  fat: number; // жиры в граммах на единицу ингредиента
+
+  @Column({ type: 'float' })
+  carbs: number; // углеводы в граммах на единицу ингредиента
 }

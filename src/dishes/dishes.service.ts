@@ -22,7 +22,9 @@ export class DishesService {
   async create(dto: CreateDishDto): Promise<Dish> {
     // Validate ingredient IDs exist
     for (const ingredient of dto.ingredients || []) {
-      const exists = await this.ingredientsService.findOne(ingredient.ingredientId);
+      const exists = await this.ingredientsService.findOne(
+        ingredient.ingredientId,
+      );
       if (!exists) {
         throw new NotFoundException(
           `Ingredient with ID "${ingredient.ingredientId}" not found`,
@@ -59,15 +61,18 @@ export class DishesService {
     }
 
     if (filter?.ingredientIds && filter.ingredientIds.length > 0) {
-      qb.andWhere((qb) => {
-        const subQuery = qb
-          .subQuery()
-          .select('di.dishId')
-          .from(DishIngredient, 'di')
-          .where('di.ingredientId IN (:...ingredientIds)')
-          .getQuery();
-        return 'dish.id IN ' + subQuery;
-      }, { ingredientIds: filter.ingredientIds });
+      qb.andWhere(
+        (qb) => {
+          const subQuery = qb
+            .subQuery()
+            .select('di.dishId')
+            .from(DishIngredient, 'di')
+            .where('di.ingredientId IN (:...ingredientIds)')
+            .getQuery();
+          return 'dish.id IN ' + subQuery;
+        },
+        { ingredientIds: filter.ingredientIds },
+      );
     }
 
     const [data, total] = await qb.getManyAndCount();
@@ -112,7 +117,9 @@ export class DishesService {
             }
           }
 
-          await transactionalEntityManager.delete(DishIngredient, { dishId: id });
+          await transactionalEntityManager.delete(DishIngredient, {
+            dishId: id,
+          });
           dish.ingredients = dto.ingredients.map((i) =>
             transactionalEntityManager.create(DishIngredient, {
               ingredientId: i.ingredientId,

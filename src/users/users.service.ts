@@ -68,6 +68,10 @@ export class UsersService {
     return await bcrypt.hash(password, saltRounds);
   }
 
+  async comparePassword(plain: string, hashed: string): Promise<boolean> {
+    return bcrypt.compare(plain, hashed);
+  }
+
   private validatePassword(password: string): true | string {
     const minLength = 8;
     const hasLetters = /[a-zA-Z]/.test(password);

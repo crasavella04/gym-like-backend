@@ -6,10 +6,7 @@ import { Meal } from './entities/meal.entity';
 import { DishesModule } from '../dishes/dishes.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Meal]),
-    DishesModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Meal]), DishesModule],
   providers: [MealsService],
   controllers: [MealsController],
   exports: [MealsService],

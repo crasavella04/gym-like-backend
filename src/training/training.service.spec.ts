@@ -144,7 +144,11 @@ describe('TrainingService', () => {
       mockTrainingRepository.findOne.mockResolvedValue(mockTraining);
       mockTrainingRepository.save.mockResolvedValue(updatedTraining);
 
-      const result = await service.update('user-123', 'training-123', updateDto);
+      const result = await service.update(
+        'user-123',
+        'training-123',
+        updateDto,
+      );
 
       expect(result).toEqual(updatedTraining);
     });

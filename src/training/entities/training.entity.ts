@@ -21,7 +21,7 @@ export class Training {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => User, (user) => {}, {
+  @ManyToOne(() => User, () => {}, {
     nullable: true,
     onDelete: 'CASCADE',
   })
@@ -31,6 +31,9 @@ export class Training {
   @OneToMany(() => TrainingExercises, (exercises) => exercises.training)
   exercises: TrainingExercises[];
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'bigint' })
   date: number;
+
+  @Column({ type: 'varchar' })
+  title: string;
 }

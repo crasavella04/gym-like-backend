@@ -91,7 +91,10 @@ describe('MetricsController', () => {
 
       mockMetricsService.create.mockResolvedValue(mockMetric);
 
-      const result = await controller.createMetric(mockRequest, createMetricDto);
+      const result = await controller.createMetric(
+        mockRequest,
+        createMetricDto,
+      );
 
       expect(service.create).toHaveBeenCalledWith(mockUserId, createMetricDto);
       expect(result).toEqual(mockMetric);

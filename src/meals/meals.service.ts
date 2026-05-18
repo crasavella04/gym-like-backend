@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Meal } from './entities/meal.entity';
@@ -17,14 +21,14 @@ export class MealsService {
   async findAll(userId: string): Promise<Meal[]> {
     return this.mealsRepository.find({
       where: { userId },
-      relations: ['dish'],
+      relations: ['dish', 'dish.ingredients', 'dish.ingredients.ingredient'],
     });
   }
 
   async findOne(id: string, userId: string): Promise<Meal> {
     const meal = await this.mealsRepository.findOne({
       where: { id },
-      relations: ['dish'],
+      relations: ['dish', 'dish.ingredients', 'dish.ingredients.ingredient'],
     });
 
     if (!meal) {
@@ -32,7 +36,9 @@ export class MealsService {
     }
 
     if (meal.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to access this meal');
+      throw new ForbiddenException(
+        'You do not have permission to access this meal',
+      );
     }
 
     return meal;
@@ -40,6 +46,12 @@ export class MealsService {
 
   async create(userId: string, createMealDto: CreateMealDto): Promise<Meal> {
     const dish = await this.dishesService.findOne(createMealDto.dishId);
+
+    if (!dish) {
+      throw new NotFoundException(
+        `Deash with ID ${createMealDto.dishId} not found`,
+      );
+    }
 
     const meal = this.mealsRepository.create({
       ...createMealDto,
@@ -49,7 +61,11 @@ export class MealsService {
     return this.mealsRepository.save(meal);
   }
 
-  async update(id: string, userId: string, updateMealDto: UpdateMealDto): Promise<Meal> {
+  async update(
+    id: string,
+    userId: string,
+    updateMealDto: UpdateMealDto,
+  ): Promise<Meal> {
     const meal = await this.mealsRepository.findOne({
       where: { id },
     });
@@ -59,7 +75,9 @@ export class MealsService {
     }
 
     if (meal.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to update this meal');
+      throw new ForbiddenException(
+        'You do not have permission to update this meal',
+      );
     }
 
     if (updateMealDto.dishId) {
@@ -80,7 +98,9 @@ export class MealsService {
     }
 
     if (meal.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to delete this meal');
+      throw new ForbiddenException(
+        'You do not have permission to delete this meal',
+      );
     }
 
     await this.mealsRepository.remove(meal);

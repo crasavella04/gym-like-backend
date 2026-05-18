@@ -4,4 +4,6 @@ export interface IPayload {
   lastname?: string;
   avatar?: string;
   email: string;
+  iat?: number;
+  exp?: number;
 }

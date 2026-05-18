@@ -7,7 +7,10 @@ import { DishIngredient } from './entities/dish-ingredient.entity';
 import { IngredientsModule } from 'src/ingredients/ingredients.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Dish, DishIngredient]), IngredientsModule],
+  imports: [
+    TypeOrmModule.forFeature([Dish, DishIngredient]),
+    IngredientsModule,
+  ],
   controllers: [DishesController],
   providers: [DishesService],
   exports: [DishesService],

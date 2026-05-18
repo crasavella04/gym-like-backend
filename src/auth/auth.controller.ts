@@ -50,7 +50,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
   ) {
-    const token = req.cookies.refresh_token;
+    const token = req.cookies.refresh_token as string | undefined;
 
     const { refresh_token, access_token } =
       await this.authService.refresh(token);

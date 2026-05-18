@@ -27,7 +27,7 @@ export class User {
   @Column({ type: 'varchar', length: 100 })
   lastname: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, default: RoleEnum.TRAINEE })
   role: RoleEnum;
 
   @Column({ type: 'varchar', length: 255 })
@@ -37,13 +37,13 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   gender: GenderEnum;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   trainingGoal: TrainingGoalEnum;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   date_birth: number;
 
   @Column({ type: 'varchar', length: 500, nullable: true })

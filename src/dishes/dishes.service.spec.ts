@@ -61,14 +61,19 @@ describe('DishesService', () => {
     };
 
     ingredientsService = {
-      findOne: jest.fn().mockResolvedValue({ id: 'ing-1', title: 'Test Ingredient' }),
+      findOne: jest
+        .fn()
+        .mockResolvedValue({ id: 'ing-1', title: 'Test Ingredient' }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DishesService,
         { provide: getRepositoryToken(Dish), useValue: dishRepo },
-        { provide: getRepositoryToken(DishIngredient), useValue: dishIngredientRepo },
+        {
+          provide: getRepositoryToken(DishIngredient),
+          useValue: dishIngredientRepo,
+        },
         { provide: IngredientsService, useValue: ingredientsService },
       ],
     }).compile();
@@ -127,14 +132,19 @@ describe('DishesService', () => {
 
     it('should throw NotFoundException if dish not found', async () => {
       dishRepo.findOne.mockResolvedValue(null);
-      await expect(service.findOne('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('update', () => {
     it('should update dish title and description', async () => {
-      const dto: UpdateDishDto = { title: 'Новое название', description: 'Новое описание' };
-      
+      const dto: UpdateDishDto = {
+        title: 'Новое название',
+        description: 'Новое описание',
+      };
+
       dishRepo.manager.transaction.mockImplementation(async (callback) => {
         const transactionalEntityManager = {
           findOne: jest.fn().mockResolvedValue({ ...mockDish }),
@@ -149,11 +159,12 @@ describe('DishesService', () => {
 
     it('should replace ingredients on update', async () => {
       const dto: UpdateDishDto = {
-        ingredients: [
-          { ingredientId: 'ing-3', quantity: 200 },
-        ],
+        ingredients: [{ ingredientId: 'ing-3', quantity: 200 }],
       };
-      ingredientsService.findOne.mockResolvedValue({ id: 'ing-3', title: 'Test Ingredient 3' });
+      ingredientsService.findOne.mockResolvedValue({
+        id: 'ing-3',
+        title: 'Test Ingredient 3',
+      });
       dishIngredientRepo.create.mockImplementation((i) => i);
 
       dishRepo.manager.transaction.mockImplementation(async (callback) => {
@@ -161,7 +172,9 @@ describe('DishesService', () => {
           findOne: jest.fn().mockResolvedValue({ ...mockDish }),
           delete: jest.fn(),
           create: jest.fn().mockImplementation((i) => i),
-          save: jest.fn().mockResolvedValue({ ...mockDish, ingredients: dto.ingredients }),
+          save: jest
+            .fn()
+            .mockResolvedValue({ ...mockDish, ingredients: dto.ingredients }),
         };
         return callback(transactionalEntityManager);
       });
@@ -172,7 +185,9 @@ describe('DishesService', () => {
 
     it('should throw NotFoundException if dish not found', async () => {
       dishRepo.findOne.mockResolvedValue(null);
-      await expect(service.update('invalid-id', {})).rejects.toThrow(NotFoundException);
+      await expect(service.update('invalid-id', {})).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -186,7 +201,9 @@ describe('DishesService', () => {
 
     it('should throw NotFoundException if dish not found', async () => {
       dishRepo.findOne.mockResolvedValue(null);
-      await expect(service.remove('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

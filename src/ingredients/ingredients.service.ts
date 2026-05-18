@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
-import { Ingredient } from "./entities/ingredient.entity";
+import { Ingredient } from './entities/ingredient.entity';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 
@@ -23,7 +23,7 @@ export class IngredientsService {
     take: number = 10,
   ): Promise<{ data: Ingredient[]; total: number }> {
     const where = search ? { title: Like(`%${search}%`) } : {};
-    
+
     const [data, total] = await this.ingredientsRepository.findAndCount({
       where,
       skip,

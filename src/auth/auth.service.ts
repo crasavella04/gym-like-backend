@@ -25,9 +25,12 @@ export class AuthService implements IAuthService {
       );
     }
 
-    const hashedPassword = await this.usersService.hashPassword(password);
+    const isPasswordValid = await this.usersService.comparePassword(
+      password,
+      user.password,
+    );
 
-    if (user.password !== hashedPassword) {
+    if (!isPasswordValid) {
       throw new HttpException(
         'Email or Password is incorrect',
         HttpStatus.BAD_REQUEST,
@@ -84,7 +87,8 @@ export class AuthService implements IAuthService {
         HttpStatus.UNAUTHORIZED,
       );
 
-    const payload = this.jwtService.decodeRefreshToken(refresh_token);
+    const { iat, exp, ...payload } =
+      this.jwtService.decodeRefreshToken(refresh_token);
 
     const access_token = this.jwtService.createAccessToken(payload);
     const new_refresh_token = this.jwtService.createRefreshToken(payload);

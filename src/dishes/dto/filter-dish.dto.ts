@@ -8,7 +8,11 @@ export class FilterDishDto {
   @IsString()
   title?: string;
 
-  @ApiProperty({ description: 'Фильтр по ID ингредиентов (через запятую)', required: false, example: 'uuid1,uuid2' })
+  @ApiProperty({
+    description: 'Фильтр по ID ингредиентов (через запятую)',
+    required: false,
+    example: 'uuid1,uuid2',
+  })
   @IsOptional()
   @IsString()
   @Transform(({ value }) => (value ? value.split(',') : undefined))

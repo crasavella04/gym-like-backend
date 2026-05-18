@@ -93,24 +93,39 @@ describe('UsersController', () => {
     it('should update user using id from req.user.id', async () => {
       const updateDto: UpdateUserDto = { firstname: 'Updated Name' };
       const req = { user: { id: 'user-123' } } as any;
-      mockUsersService.update.mockResolvedValue({ ...mockUserEntity, ...updateDto });
+      mockUsersService.update.mockResolvedValue({
+        ...mockUserEntity,
+        ...updateDto,
+      });
 
       const result = await controller.update(req, updateDto);
 
-      expect(mockUsersService.update).toHaveBeenCalledWith('user-123', updateDto);
+      expect(mockUsersService.update).toHaveBeenCalledWith(
+        'user-123',
+        updateDto,
+      );
       expect(result.firstname).toBe('Updated Name');
     });
 
     it('should NOT accept id from @Param - uses req.user.id only', async () => {
       const updateDto: UpdateUserDto = { email: 'new@example.com' };
       const req = { user: { id: 'user-999' } } as any;
-      mockUsersService.update.mockResolvedValue({ ...mockUserEntity, ...updateDto });
+      mockUsersService.update.mockResolvedValue({
+        ...mockUserEntity,
+        ...updateDto,
+      });
 
       await controller.update(req, updateDto);
 
       // Key assertion: service was called with req.user.id, not any @Param
-      expect(mockUsersService.update).toHaveBeenCalledWith('user-999', updateDto);
-      expect(mockUsersService.update).not.toHaveBeenCalledWith('user-123', expect.any(Object));
+      expect(mockUsersService.update).toHaveBeenCalledWith(
+        'user-999',
+        updateDto,
+      );
+      expect(mockUsersService.update).not.toHaveBeenCalledWith(
+        'user-123',
+        expect.any(Object),
+      );
     });
   });
 });

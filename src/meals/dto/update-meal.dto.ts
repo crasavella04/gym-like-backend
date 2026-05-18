@@ -1,4 +1,11 @@
-import { IsNumber, IsPositive, IsInt, IsDate, IsString, IsOptional } from 'class-validator';
+import {
+  IsNumber,
+  IsPositive,
+  IsInt,
+  IsDate,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UpdateMealDto {

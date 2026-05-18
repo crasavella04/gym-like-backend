@@ -9,7 +9,7 @@ import { Request } from 'express';
 
 /**
  * JWT Authentication Guard
- * 
+ *
  * Validates JWT tokens in Authorization header and attaches decoded payload to request.user.
  * Requires 'Bearer <token>' format and validates required payload fields (id, email).
  */
@@ -34,7 +34,9 @@ export class JwtAuthGuard implements CanActivate {
     const [type, token] = authHeader.split(' ');
 
     if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Invalid authorization header format. Expected: Bearer <token>');
+      throw new UnauthorizedException(
+        'Invalid authorization header format. Expected: Bearer <token>',
+      );
     }
 
     try {

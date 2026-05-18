@@ -71,7 +71,6 @@ describe('MealsService', () => {
 
     service = module.get<MealsService>(MealsService);
     mealsRepository = module.get(getRepositoryToken(Meal));
-
   });
 
   afterEach(() => {
@@ -164,7 +163,6 @@ describe('MealsService', () => {
         dishId: 'non-existent-dish',
       };
 
-
       mockDishesService.findOne.mockRejectedValue(new NotFoundException());
 
       await expect(service.create('user-123', createDto)).rejects.toThrow(
@@ -194,9 +192,9 @@ describe('MealsService', () => {
 
       mockMealsRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.update('meal-123', 'user-123', updateDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update('meal-123', 'user-123', updateDto),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw ForbiddenException if userId does not match', async () => {
@@ -205,9 +203,9 @@ describe('MealsService', () => {
 
       mockMealsRepository.findOne.mockResolvedValue(otherUserMeal);
 
-      await expect(service.update('meal-123', 'user-123', updateDto)).rejects.toThrow(
-        ForbiddenException,
-      );
+      await expect(
+        service.update('meal-123', 'user-123', updateDto),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw NotFoundException if new dishId does not exist', async () => {
@@ -216,9 +214,9 @@ describe('MealsService', () => {
       mockMealsRepository.findOne.mockResolvedValue(mockMeal);
       mockDishesService.findOne.mockRejectedValue(new NotFoundException());
 
-      await expect(service.update('meal-123', 'user-123', updateDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update('meal-123', 'user-123', updateDto),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

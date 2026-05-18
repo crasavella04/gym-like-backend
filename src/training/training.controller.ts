@@ -30,16 +30,16 @@ export class TrainingController {
   @Post()
   @ApiOperation({ summary: 'Create a new training' })
   @ApiResponse({ status: 201, description: 'Training created successfully' })
-  create(
-    @Req() req: Request,
-    @Body() createTrainingDto: CreateTrainingDto,
-  ) {
+  create(@Req() req: Request, @Body() createTrainingDto: CreateTrainingDto) {
     return this.trainingService.create(req.user.id, createTrainingDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all trainings for current user' })
-  @ApiResponse({ status: 200, description: 'Returns all trainings for the user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all trainings for the user',
+  })
   findAll(@Req() req: Request) {
     return this.trainingService.findAll(req.user.id);
   }
@@ -69,6 +69,7 @@ export class TrainingController {
   @ApiResponse({ status: 200, description: 'Training deleted successfully' })
   @ApiResponse({ status: 404, description: 'Training not found' })
   remove(@Req() req: Request, @Param('id') id: string) {
+    console.log(1, id);
     return this.trainingService.remove(req.user.id, id);
   }
 }

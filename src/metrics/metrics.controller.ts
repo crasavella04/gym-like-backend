@@ -29,6 +29,10 @@ export class MetricsController {
     @Param('metricId') metricId: string,
     @Body() body: UpdateMetricDto,
   ) {
-    return this.metricsService.updateMetricFromUser(req.user.id, metricId, body);
+    return this.metricsService.updateMetricFromUser(
+      req.user.id,
+      metricId,
+      body,
+    );
   }
 }

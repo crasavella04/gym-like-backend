@@ -1,4 +1,9 @@
-import { IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CreateDishIngredientDto } from './create-dish-ingredient.dto';

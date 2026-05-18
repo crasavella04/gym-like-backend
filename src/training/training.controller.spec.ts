@@ -102,7 +102,9 @@ describe('TrainingController', () => {
 
     it('should throw ForbiddenException if training belongs to another user', async () => {
       mockTrainingService.findOne.mockRejectedValue(
-        new ForbiddenException('You do not have permission to access this training'),
+        new ForbiddenException(
+          'You do not have permission to access this training',
+        ),
       );
 
       await expect(
@@ -132,7 +134,11 @@ describe('TrainingController', () => {
       const updatedTraining = { ...mockTraining, ...updateDto };
       mockTrainingService.update.mockResolvedValue(updatedTraining);
 
-      const result = await controller.update(mockRequest, 'training-123', updateDto);
+      const result = await controller.update(
+        mockRequest,
+        'training-123',
+        updateDto,
+      );
 
       expect(result).toEqual(updatedTraining);
       expect(mockTrainingService.update).toHaveBeenCalledWith(
@@ -145,7 +151,9 @@ describe('TrainingController', () => {
     it('should throw ForbiddenException if training belongs to another user', async () => {
       const updateDto = { date: Date.now() };
       mockTrainingService.update.mockRejectedValue(
-        new ForbiddenException('You do not have permission to update this training'),
+        new ForbiddenException(
+          'You do not have permission to update this training',
+        ),
       );
 
       await expect(
@@ -168,7 +176,9 @@ describe('TrainingController', () => {
 
     it('should throw ForbiddenException if training belongs to another user', async () => {
       mockTrainingService.remove.mockRejectedValue(
-        new ForbiddenException('You do not have permission to delete this training'),
+        new ForbiddenException(
+          'You do not have permission to delete this training',
+        ),
       );
 
       await expect(

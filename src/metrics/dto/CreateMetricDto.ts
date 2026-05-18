@@ -42,10 +42,10 @@ export class CreateMetricDto {
   @IsOptional()
   hipCircumference?: number;
 
-  @ApiProperty({
-    description: 'id пользователя',
-    example: 'qwe1-rty2-uio3',
-  })
-  @IsString()
-  userId: string;
+  // @ApiProperty({
+  //   description: 'id пользователя',
+  //   example: 'qwe1-rty2-uio3',
+  // })
+  // @IsString()
+  // userId: string;
 }
