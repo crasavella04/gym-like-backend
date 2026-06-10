@@ -71,6 +71,9 @@ export class User {
   @Column({ type: 'uuid', nullable: true })
   trainerId: string;
 
+  @Column({ type: 'int', nullable: true })
+  height?: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

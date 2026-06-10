@@ -22,6 +22,7 @@ export class AuthController {
       maxAge: 5 * 24 * 60 * 60 * 1000,
       path: '/auth/refresh',
     });
+    res.status(200);
 
     return { access_token };
   }

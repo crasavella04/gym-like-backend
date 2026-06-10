@@ -10,6 +10,7 @@ import { TrainingExercises } from './entities/training-exercises.entity';
 import { ExerciseSets } from './entities/exercise_sets.entity';
 import { CreateTrainingDto } from './dto/CreateTrainingDto';
 import { UpdateTrainingDto } from './dto/UpdateTrainingDto';
+import { UpdateSetRealValuesDto } from './dto/UpdateSetRealValuesDto';
 
 @Injectable()
 export class TrainingService {
@@ -133,6 +134,25 @@ export class TrainingService {
     if (title !== undefined) training.title = title;
 
     return this.trainingRepository.save(training);
+  }
+
+  async updateSetRealValues(
+    trainingId: string,
+    setId: string,
+    dto: UpdateSetRealValuesDto,
+  ): Promise<ExerciseSets> {
+    const set = await this.exerciseSetsRepository.findOne({
+      where: { id: setId },
+      relations: ['exercise', 'exercise.training'],
+    });
+
+    if (!set || set.exercise.training.id !== trainingId) {
+      throw new NotFoundException(`Set with ID ${setId} not found`);
+    }
+
+    await this.exerciseSetsRepository.update(setId, dto);
+
+    return this.exerciseSetsRepository.findOne({ where: { id: setId } }) as Promise<ExerciseSets>;
   }
 
   async remove(userId: string, id: string): Promise<void> {

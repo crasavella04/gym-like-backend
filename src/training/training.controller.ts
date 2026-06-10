@@ -18,6 +18,7 @@ import {
 import { TrainingService } from './training.service';
 import { CreateTrainingDto } from './dto/CreateTrainingDto';
 import { UpdateTrainingDto } from './dto/UpdateTrainingDto';
+import { UpdateSetRealValuesDto } from './dto/UpdateSetRealValuesDto';
 import { JwtAuth } from '../auth/decorators/jwt-auth.decorator';
 
 @ApiTags('training')
@@ -62,6 +63,18 @@ export class TrainingController {
     @Body() updateTrainingDto: UpdateTrainingDto,
   ) {
     return this.trainingService.update(req.user.id, id, updateTrainingDto);
+  }
+
+  @Patch(':trainingId/sets/:setId')
+  @ApiOperation({ summary: 'Update real values for a training set' })
+  @ApiResponse({ status: 200, description: 'Set updated successfully' })
+  @ApiResponse({ status: 404, description: 'Set not found' })
+  updateSetRealValues(
+    @Param('trainingId') trainingId: string,
+    @Param('setId') setId: string,
+    @Body() dto: UpdateSetRealValuesDto,
+  ) {
+    return this.trainingService.updateSetRealValues(trainingId, setId, dto);
   }
 
   @Delete(':id')
